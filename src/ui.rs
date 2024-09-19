@@ -1,14 +1,12 @@
 use chrono::prelude::*;
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::TimeZone;
 use fs_extra::dir::get_size;
-use ratatui::style::Color;
-use ratatui::text::ToSpan;
-use std::{fs, path, time::UNIX_EPOCH};
+use std::{fs, time::UNIX_EPOCH};
 
 use ratatui::{
     layout::{Constraint, Layout},
     style::{Style, Stylize},
-    widgets::{Block, List, ListState, Paragraph, Row, Table, TableState},
+    widgets::{Block, Paragraph, Row, Table, TableState},
     Frame,
 };
 
@@ -41,7 +39,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
             false => fs::read(file.clone()).unwrap().len().to_string(),
         });
         values.push({
-            let (sec, nsec) = match file
+            let (sec, _) = match file
                 .clone()
                 .metadata()
                 .unwrap()
@@ -68,7 +66,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
                 .to_string()
         });
         values.push({
-            let (sec, nsec) = match file
+            let (sec, _) = match file
                 .clone()
                 .metadata()
                 .unwrap()
@@ -109,14 +107,8 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     )
     .block(Block::bordered())
     .on_black()
-    .header(Row::new(vec![
-        "Name",
-        "Size (Bytes)",
-        "Created",
-        "Modified",
-    ]).on_red())
-    
-    .highlight_style(Style::new().bold().bg(Color::from_u32(0x222222)));
+    .header(Row::new(vec!["Name", "Size (Bytes)", "Created", "Modified"]).on_red())
+    .highlight_style(Style::new().bold().white().on_dark_gray());
     frame.render_stateful_widget(list, content, &mut list_state);
     let path = Paragraph::new(app.current_path.clone()).on_black();
     frame.render_widget(path, path_bar);

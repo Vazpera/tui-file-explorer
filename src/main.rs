@@ -42,7 +42,7 @@ async fn main() -> AppResult<()> {
 
     // Exit the user interface.
     tui.exit()?;
-    let result = std::io::stdout().write_all(format!("{}\n", app.current_path).as_bytes());
+    let _ = std::io::stdout().write_all(format!("{}\n", app.current_path).as_bytes());
     
     Ok(())
 }
