@@ -1,7 +1,9 @@
+use std::fs;
+
 use ratatui::{
-    layout::Alignment,
-    style::{Color, Style},
-    widgets::{Block, BorderType, Paragraph},
+    layout::{Alignment, Constraint, Layout},
+    style::{Color, Style, Stylize},
+    widgets::{Block, BorderType, List, ListState, Paragraph, Row},
     Frame,
 };
 
@@ -9,26 +11,28 @@ use crate::app::App;
 
 /// Renders the user interface widgets.
 pub fn render(app: &mut App, frame: &mut Frame) {
-    // This is where you add new widgets.
-    // See the following resources:
-    // - https://docs.rs/ratatui/latest/ratatui/widgets/index.html
-    // - https://github.com/ratatui/ratatui/tree/master/examples
-    frame.render_widget(
-        Paragraph::new(format!(
-            "This is a tui template.\n\
-                Press `Esc`, `Ctrl-C` or `q` to stop running.\n\
-                Press left and right to increment and decrement the counter respectively.\n\
-                Counter: {}",
-            app.counter
-        ))
-        .block(
-            Block::bordered()
-                .title("Template")
-                .title_alignment(Alignment::Center)
-                .border_type(BorderType::Rounded),
+    let [path_bar, content] =
+        Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).areas(frame.area());
+    let sub_paths = match fs::read_dir(&app.current_path) {
+        Ok(dir) => dir,
+        Err(err) => panic!("How did you get here?: {err}"),
+    }
+    .map(|x| x.unwrap().path())
+    .map(|file| {
+        format!(
+            "{}{}",
+            match file.file_name() {
+                Some(j) => j.to_string_lossy().to_string(),
+                None => String::new(),
+            },
+            match file.is_dir() {
+                true => "/",
+                false => "",
+            }
         )
-        .style(Style::default().fg(Color::Cyan).bg(Color::Black))
-        .centered(),
-        frame.area(),
-    )
+    })
+    .collect::<Vec<String>>();
+    let mut list_state = ListState::default().with_selected(Some(app.selected));
+    let list = List::new(sub_paths).block(Block::bordered()).scroll_padding(5).highlight_style(Style::new().on_red());
+    frame.render_stateful_widget(list, content, &mut list_state);
 }
