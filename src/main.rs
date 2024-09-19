@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Write};
 
 use ratatui::{backend::CrosstermBackend, Terminal};
 
@@ -21,7 +21,7 @@ async fn main() -> AppResult<()> {
     let mut app = App::new();
 
     // Initialize the terminal user interface.
-    let backend = CrosstermBackend::new(io::stdout());
+    let backend = CrosstermBackend::new(io::stderr());
     let terminal = Terminal::new(backend)?;
     let events = EventHandler::new(250);
     let mut tui = Tui::new(terminal, events);
@@ -42,5 +42,7 @@ async fn main() -> AppResult<()> {
 
     // Exit the user interface.
     tui.exit()?;
+    let result = std::io::stdout().write_all(format!("{}\n", app.current_path).as_bytes());
+    
     Ok(())
 }

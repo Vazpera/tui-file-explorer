@@ -1,4 +1,4 @@
-use std::{error, fs};
+use std::{error, fs, path::Path};
 
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
@@ -58,5 +58,30 @@ impl App {
         if let Some(res) = self.selected.checked_sub(1) {
             self.selected = res;
         }
+    }
+    pub fn zoom(&mut self) {
+        let files = fs::read_dir(&self.current_path)
+            .unwrap()
+            .map(|x| x.unwrap().path())
+            .collect::<Vec<_>>();
+        match files[self.selected].is_dir() {
+            true => {
+                self.current_path = files[self.selected].as_path().to_string_lossy().to_string()
+            }
+            false => {
+                self.current_path = files[self.selected].as_path().to_string_lossy().to_string();
+                self.quit();
+            }
+        }
+        self.selected = 0;
+    }
+    pub fn unzoom(&mut self) {
+        self.current_path = match Path::new(&self.current_path)
+            .parent()
+            {
+                Some(j) => j.to_string_lossy().to_string(),
+                None => self.current_path.clone(),
+            }
+            
     }
 }

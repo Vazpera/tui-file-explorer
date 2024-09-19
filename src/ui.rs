@@ -1,9 +1,9 @@
-use std::fs;
+use std::{fs, path};
 
 use ratatui::{
-    layout::{Alignment, Constraint, Layout},
-    style::{Color, Style, Stylize},
-    widgets::{Block, BorderType, List, ListState, Paragraph, Row},
+    layout::{Constraint, Layout},
+    style::{Style, Stylize},
+    widgets::{Block, List, ListState, Paragraph},
     Frame,
 };
 
@@ -33,6 +33,12 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     })
     .collect::<Vec<String>>();
     let mut list_state = ListState::default().with_selected(Some(app.selected));
-    let list = List::new(sub_paths).block(Block::bordered()).scroll_padding(5).highlight_style(Style::new().on_red());
+    let list = List::new(sub_paths)
+        .block(Block::bordered())
+        .scroll_padding(5)
+        .on_black()
+        .highlight_style(Style::new().on_red());
     frame.render_stateful_widget(list, content, &mut list_state);
+    let path = Paragraph::new(app.current_path.clone()).on_black();
+    frame.render_widget(path, path_bar);
 }

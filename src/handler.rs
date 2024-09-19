@@ -15,11 +15,17 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
             }
         }
         // selected handlers
-        KeyCode::Right => {
+        KeyCode::Down => {
             app.increment_selected();
         }
-        KeyCode::Left => {
+        KeyCode::Up => {
             app.decrement_selected();
+        }
+        KeyCode::Enter => {
+            app.zoom();
+        }
+        KeyCode::Backspace => {
+            app.unzoom();
         }
         // Other handlers you could add here.
         _ => {}
