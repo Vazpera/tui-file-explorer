@@ -1,6 +1,7 @@
 use chrono::prelude::*;
 use chrono::TimeZone;
 use fs_extra::dir::get_size;
+use std::time::SystemTime;
 use std::{fs, time::UNIX_EPOCH};
 
 use ratatui::{
@@ -34,17 +35,13 @@ pub fn render(app: &mut App, frame: &mut Frame) {
                 false => "",
             }
         ));
-        values.push(match file.clone().is_dir() {
-            true => get_size(file.clone()).unwrap().to_string(),
-            false => fs::read(file.clone()).unwrap().len().to_string(),
-        });
         values.push({
             let (sec, _) = match file
                 .clone()
                 .metadata()
                 .unwrap()
                 .created()
-                .unwrap()
+                .unwrap_or(SystemTime::now())
                 .duration_since(UNIX_EPOCH)
             {
                 Ok(dur) => (dur.as_secs() as i64, dur.subsec_nanos()),
@@ -92,6 +89,26 @@ pub fn render(app: &mut App, frame: &mut Frame) {
                 .format("%d/%m/%Y %H:%M")
                 .to_string()
         });
+        values.push(format!(
+            "{}",
+            match file.is_dir() {
+                true => "File Folder",
+                false => match file.extension() {
+                    Some(extension) => {
+                        match extension.to_str().unwrap() {
+                            "txt" => "Text File",
+                            "mp3" | "wav" | "flak" => "Audio File",
+                            "mp4" | "mov" => "Video File",
+                            "rs" | "ts" | "js" | "cpp" | "c" | "cs" | "go" => "Source Code",
+                            "exe" => "Windows Executable",
+                            "deb" => "Debian Package",
+                            _ => "",
+                        }
+                    }
+                    _ => "",
+                },
+            }
+        ));
         Row::new(values)
     })
     .collect::<Vec<Row>>();
@@ -107,7 +124,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     )
     .block(Block::bordered())
     .on_black()
-    .header(Row::new(vec!["Name", "Size (Bytes)", "Created", "Modified"]).on_red())
+    .header(Row::new(vec!["Name", "Created", "Modified", "Type"]).on_red())
     .highlight_style(Style::new().bold().white().on_dark_gray());
     frame.render_stateful_widget(list, content, &mut list_state);
     let path = Paragraph::new(app.current_path.clone()).on_black();
