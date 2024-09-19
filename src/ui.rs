@@ -1,7 +1,5 @@
 use chrono::prelude::*;
-use chrono::TimeZone;
-use fs_extra::dir::get_size;
-use std::time::SystemTime;
+use chrono::TimeZone;use std::time::SystemTime;
 use std::{fs, time::UNIX_EPOCH};
 
 use ratatui::{
