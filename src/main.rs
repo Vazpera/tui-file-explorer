@@ -1,6 +1,5 @@
 use std::{
-    fs,
-    io::{self, Write},
+    env, fs, io::{self, Write}
 };
 
 use crate::{
@@ -23,8 +22,8 @@ pub mod ui;
 async fn main() -> AppResult<()> {
     // Create an application.
     let mut app = App::new();
-
-    let theme_string = fs::read_to_string("./theme.json");
+    let source_directory = env::current_exe().unwrap().parent().unwrap().parent().unwrap().parent().unwrap().to_string_lossy().to_string();
+    let theme_string = fs::read_to_string(source_directory+"/theme.json");
     let theme: Theme = match serde_json::from_str(&theme_string.unwrap().as_str()) {
         Ok(them) => them,
         Err(_) => serde_json::from_str(
