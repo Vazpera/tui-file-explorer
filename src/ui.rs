@@ -11,9 +11,10 @@ use ratatui::{
 };
 
 use crate::app::App;
+use crate::theme;
 
 /// Renders the user interface widgets.
-pub fn render(app: &mut App, frame: &mut Frame) {
+pub fn render(app: &mut App, frame: &mut Frame, theme: theme::Theme) {
     let [path_bar, content] =
         Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).areas(frame.area());
     let sub_paths = match fs::read_dir(&app.current_path) {
@@ -60,10 +61,8 @@ pub fn render(app: &mut App, frame: &mut Frame) {
                         .unwrap()
                         .format("%d/%m/%Y %H:%M")
                         .to_string()
-                },
-                Err(_) => {
-                    "N/A".to_string()
                 }
+                Err(_) => "N/A".to_string(),
             }
         });
         values.push({
@@ -92,10 +91,8 @@ pub fn render(app: &mut App, frame: &mut Frame) {
                         .unwrap()
                         .format("%d/%m/%Y %H:%M")
                         .to_string()
-                },
-                Err(_) => {
-                    "N/A".to_string()
                 }
+                Err(_) => "N/A".to_string(),
             }
         });
         values.push(format!(
@@ -118,7 +115,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
                 },
             }
         ));
-        Row::new(values)
+        Row::new(values).fg(theme.text).bg(theme.background)
     })
     .collect::<Vec<Row>>();
     let mut list_state = TableState::default().with_selected(Some(app.selected));
@@ -131,11 +128,22 @@ pub fn render(app: &mut App, frame: &mut Frame) {
             Constraint::Fill(1),
         ],
     )
-    .block(Block::bordered())
-    .on_black()
-    .header(Row::new(vec!["Name", "Created", "Modified", "Type"]).on_red())
-    .highlight_style(Style::new().bold().white().on_dark_gray());
+    .block(Block::bordered().border_style(Style::new().fg(theme.border)))
+    .bg(theme.background)
+    .header(
+        Row::new(vec!["Name", "Created", "Modified", "Type"])
+            .fg(theme.header_text)
+            .bg(theme.header_background),
+    )
+    .highlight_style(
+        Style::new()
+            .bold()
+            .fg(theme.highlight_text)
+            .bg(theme.highlight_background),
+    );
     frame.render_stateful_widget(list, content, &mut list_state);
-    let path = Paragraph::new(app.current_path.clone()).on_black();
+    let path = Paragraph::new(app.current_path.clone())
+        .fg(theme.path_text)
+        .bg(theme.path_background);
     frame.render_widget(path, path_bar);
 }
