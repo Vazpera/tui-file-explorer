@@ -1,4 +1,7 @@
-use std::{error, fs, path::Path};
+use std::{
+    error, fs,
+    path::{Path, PathBuf},
+};
 
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
@@ -19,7 +22,11 @@ impl Default for App {
         Self {
             running: true,
             selected: 0,
-            current_path: "/workspaces/tui-file-explorer".to_string(),
+            current_path: PathBuf::from("./")
+                .canonicalize()
+                .unwrap()
+                .to_string_lossy()
+                .to_string(),
         }
     }
 }
@@ -76,12 +83,9 @@ impl App {
         self.selected = 0;
     }
     pub fn unzoom(&mut self) {
-        self.current_path = match Path::new(&self.current_path)
-            .parent()
-            {
-                Some(j) => j.to_string_lossy().to_string(),
-                None => self.current_path.clone(),
-            }
-            
+        self.current_path = match Path::new(&self.current_path).parent() {
+            Some(j) => j.to_string_lossy().to_string(),
+            None => self.current_path.clone(),
+        }
     }
 }

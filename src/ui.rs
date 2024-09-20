@@ -17,7 +17,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
         Layout::vertical([Constraint::Length(1), Constraint::Fill(1)]).areas(frame.area());
     let sub_paths = match fs::read_dir(&app.current_path) {
         Ok(dir) => dir,
-        Err(err) => panic!("How did you get here?: {err}"),
+        Err(err) => panic!("How did you get here?: {err}, {}", app.current_path),
     }
     .map(|x| x.unwrap().path())
     .map(|file| {
