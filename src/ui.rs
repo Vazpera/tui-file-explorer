@@ -1,5 +1,8 @@
 use chrono::prelude::*;
-use chrono::TimeZone;use std::time::SystemTime;
+use chrono::TimeZone;
+use std::fs::metadata;
+use std::net::ToSocketAddrs;
+use std::time::SystemTime;
 use std::{fs, time::UNIX_EPOCH};
 
 use ratatui::{
@@ -34,58 +37,68 @@ pub fn render(app: &mut App, frame: &mut Frame) {
             }
         ));
         values.push({
-            let (sec, _) = match file
-                .clone()
-                .metadata()
-                .unwrap()
-                .created()
-                .unwrap_or(SystemTime::now())
-                .duration_since(UNIX_EPOCH)
-            {
-                Ok(dur) => (dur.as_secs() as i64, dur.subsec_nanos()),
-                Err(e) => {
-                    // unlikely but should be handled
-                    let dur = e.duration();
-                    let (sec, nsec) = (dur.as_secs() as i64, dur.subsec_nanos());
-                    if nsec == 0 {
-                        (-sec, 0)
-                    } else {
-                        (-sec - 1, 1_000_000_000 - nsec)
-                    }
+            let file_metadata = file.clone().metadata();
+            match file_metadata {
+                Ok(metadata) => {
+                    let (sec, _) = match metadata
+                        .created()
+                        .unwrap_or(SystemTime::now())
+                        .duration_since(UNIX_EPOCH)
+                    {
+                        Ok(dur) => (dur.as_secs() as i64, dur.subsec_nanos()),
+                        Err(e) => {
+                            // unlikely but should be handled
+                            let dur = e.duration();
+                            let (sec, nsec) = (dur.as_secs() as i64, dur.subsec_nanos());
+                            if nsec == 0 {
+                                (-sec, 0)
+                            } else {
+                                (-sec - 1, 1_000_000_000 - nsec)
+                            }
+                        }
+                    };
+                    Local
+                        .timestamp_opt(sec, 0)
+                        .unwrap()
+                        .format("%d/%m/%Y %H:%M")
+                        .to_string()
+                },
+                Err(_) => {
+                    "N/A".to_string()
                 }
-            };
-            Local
-                .timestamp_opt(sec, 0)
-                .unwrap()
-                .format("%d/%m/%Y %H:%M")
-                .to_string()
+            }
         });
         values.push({
-            let (sec, _) = match file
-                .clone()
-                .metadata()
-                .unwrap()
-                .modified()
-                .unwrap()
-                .duration_since(UNIX_EPOCH)
-            {
-                Ok(dur) => (dur.as_secs() as i64, dur.subsec_nanos()),
-                Err(e) => {
-                    // unlikely but should be handled
-                    let dur = e.duration();
-                    let (sec, nsec) = (dur.as_secs() as i64, dur.subsec_nanos());
-                    if nsec == 0 {
-                        (-sec, 0)
-                    } else {
-                        (-sec - 1, 1_000_000_000 - nsec)
-                    }
+            let file_metadata = file.clone().metadata();
+            match file_metadata {
+                Ok(metadata) => {
+                    let (sec, _) = match metadata
+                        .modified()
+                        .unwrap_or(SystemTime::now())
+                        .duration_since(UNIX_EPOCH)
+                    {
+                        Ok(dur) => (dur.as_secs() as i64, dur.subsec_nanos()),
+                        Err(e) => {
+                            // unlikely but should be handled
+                            let dur = e.duration();
+                            let (sec, nsec) = (dur.as_secs() as i64, dur.subsec_nanos());
+                            if nsec == 0 {
+                                (-sec, 0)
+                            } else {
+                                (-sec - 1, 1_000_000_000 - nsec)
+                            }
+                        }
+                    };
+                    Local
+                        .timestamp_opt(sec, 0)
+                        .unwrap()
+                        .format("%d/%m/%Y %H:%M")
+                        .to_string()
+                },
+                Err(_) => {
+                    "N/A".to_string()
                 }
-            };
-            Local
-                .timestamp_opt(sec, 0)
-                .unwrap()
-                .format("%d/%m/%Y %H:%M")
-                .to_string()
+            }
         });
         values.push(format!(
             "{}",
