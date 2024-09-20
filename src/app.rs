@@ -2,7 +2,6 @@ use std::{
     error, fs,
     path::{Path, PathBuf},
 };
-use ratatui::style::Color;
 
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;

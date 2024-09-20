@@ -10,10 +10,7 @@ use crate::{
     theme::Theme,
     tui::Tui,
 };
-use ratatui::style::Color;
 use ratatui::{backend::CrosstermBackend, Terminal};
-use serde::{Deserialize, Serialize};
-use serde_json::to_string_pretty;
 
 pub mod app;
 pub mod event;
