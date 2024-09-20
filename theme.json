@@ -1,11 +1,12 @@
 {
-  "border": "Gray",
-  "background": "Reset",
-  "text": "Gray",
-  "header_background": "Red",
-  "header_text": "White",
-  "highlight_background": "DarkGray",
-  "highlight_text": "White",
-  "path_background": "Reset",
-  "path_text": "Gray"
+    "border": "Gray",
+    "background": "Reset",
+    "text": "Gray",
+    "header_background": "Red",
+    "header_text": "White",
+    "highlight_background": "DarkGray",
+    "highlight_text": "White",
+    "path_background": "Reset",
+    "path_text": "Gray",
+    "extra_colors": ["red", "yellow", "green", "blue", "magenta"]
 }

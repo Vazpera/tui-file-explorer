@@ -40,7 +40,7 @@ async fn main() -> AppResult<()> {
     // Start the main loop.
     while app.running {
         // Render the user interface.
-        tui.draw(&mut app, theme)?;
+        tui.draw(&mut app, theme.clone())?;
         // Handle events.
         match tui.events.next().await? {
             Event::Tick => app.tick(),
