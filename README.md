@@ -15,6 +15,6 @@ cargo build
 ## Usage
 After you have the program installed, you can run
 ```sh
-file-explorer
+fxp
 ```
 to read the file and begin editing
