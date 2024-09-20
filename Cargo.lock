@@ -202,18 +202,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "file-explorer"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "crossterm",
- "fs_extra",
- "futures",
- "ratatui",
- "tokio",
-]
-
-[[package]]
 name = "fs_extra"
 version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -306,6 +294,18 @@ dependencies = [
  "pin-project-lite",
  "pin-utils",
  "slab",
+]
+
+[[package]]
+name = "fxp"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "crossterm",
+ "fs_extra",
+ "futures",
+ "ratatui",
+ "tokio",
 ]
 
 [[package]]

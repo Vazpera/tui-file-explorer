@@ -1,5 +1,5 @@
 [package]
-name = "file-explorer"
+name = "fxp"
 version = "0.1.0"
 authors = ["Vaspera <110002885+Vazpera@users.noreply.github.com>"]
 license = "MIT"
